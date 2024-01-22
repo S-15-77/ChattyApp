@@ -25,7 +25,7 @@ function Register() {
             <input type="password" placeholder='Confirm Password' name= "confirmPassword" onChange={(e)=> handleChange(e)} />
             <button type ="submit">Create User</button>
             <span>Already have an account? <Link to = "/login">Login</Link></span>
-            <h1>Hello World</h1>
+            
             </form>
         </FormContainer>
     </>

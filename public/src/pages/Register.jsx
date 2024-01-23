@@ -1,14 +1,75 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
-import styled from 'styled-components'
-import Logo from "../assets/logo_b_w_1.png"
+import React, {useState}from 'react';
+import { Link,useNavigate} from 'react-router-dom';
+import styled from 'styled-components';
+import Logo from "../assets/logo_b_w_1.png";
+import {ToastContainer,toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios';
+import { registerRoute } from '../utils/APIRoutes';
+
 
 function Register() {
-    const handleSubmit = (event) => {
+    const navigate = useNavigate();
+    const [values, setValues] = useState({
+        username : "",
+        email : "",
+        password : "",
+        confirmPassword : "",
+    })
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        alert("form");
+        if(handleValidation()){
+            console.log("in validation",registerRoute);
+            const {username,email,password} = values;
+            const data = await axios.post(registerRoute,{
+                username,email,password,
+            });
+            if(data.status === false){
+                toast.error(data.msg,toastOptions);
+            }
+            if(data.status === true){
+                localStorage.setItem('Chatty-user',JSON.stringify(data.user));
+                navigate("/chat");
+            }
+            
+        }
+    }
+    const toastOptions = {
+        position : "bottom-right",
+        autoClose : 5000,
+        pauseOnHover : true,
+        draggable : true,
+        theme : "dark",
+    }
+    const handleValidation = () =>{
+        const {username,email,password,confirmPassword} = values;
+        //to check if user has entered the usernamefield
+        if(username.length < 3){
+            toast.error("Username must be more than 3 character",toastOptions);
+            return false;
+        }
+        //to check if email is entered
+        else if(email === ""){
+            toast.error("Email is Required",toastOptions);
+            return false;
+        }
+        //to check if password is valid
+        else if(password.length < 6){
+            toast.error("Password must be equal or more than 6 character",toastOptions);
+            return false;
+        }
+        //To check if password and confirm password are same
+        else if(password !== confirmPassword){
+            toast.error("Passwords do not match",toastOptions);
+            return false;
+        }
+        
+        
+        
+        return true;
     }
     const handleChange = (event) => {
+        setValues({...values,[event.target.name]: event.target.value});
 
     }
   return (
@@ -28,6 +89,7 @@ function Register() {
             
             </form>
         </FormContainer>
+        <ToastContainer />
     </>
   )
 }

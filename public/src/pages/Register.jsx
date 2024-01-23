@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import styled from 'styled-components'
-import Logo from "../assets/logo.png"
+import Logo from "../assets/logo_b_w_1.png"
 
 function Register() {
     const handleSubmit = (event) => {
@@ -45,7 +45,8 @@ const  FormContainer = styled.div`
         gap: 1rem;
         justify-content : center;
         img{
-            height:5rem;
+            height : 6.5rem;
+            width : 6.5rem;
         }
         h1{
             color : white;

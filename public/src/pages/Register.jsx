@@ -16,24 +16,6 @@ function Register() {
         password : "",
         confirmPassword : "",
     })
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if(handleValidation()){
-            console.log("in validation",registerRoute);
-            const {username,email,password} = values;
-            const data = await axios.post(registerRoute,{
-                username,email,password,
-            });
-            if(data.status === false){
-                toast.error(data.msg,toastOptions);
-            }
-            if(data.status === true){
-                localStorage.setItem('Chatty-user',JSON.stringify(data.user));
-                navigate("/chat");
-            }
-            
-        }
-    }
     const toastOptions = {
         position : "bottom-right",
         autoClose : 5000,
@@ -41,6 +23,28 @@ function Register() {
         draggable : true,
         theme : "dark",
     }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if(handleValidation()){
+            // console.log("in validation",registerRoute);
+            const {username,email,password} = values;
+            const data = await axios.post(registerRoute,{
+                username,email,password,
+            });
+            // console.log(data.status);
+            
+            if(data.status === 200){
+                localStorage.setItem('Chatty-user',JSON.stringify(data.user));
+                console.log("Data Sent to DB");
+                navigate("/");
+            }
+            else{
+                toast.error(data.msg,toastOptions);
+            }
+            
+        }
+    }
+
     const handleValidation = () =>{
         const {username,email,password,confirmPassword} = values;
         //to check if user has entered the usernamefield

@@ -28,12 +28,12 @@ function Register() {
         if(handleValidation()){
             // console.log("in validation",registerRoute);
             const {username,email,password} = values;
-            const data = await axios.post(registerRoute,{
+            const {data }= await axios.post(registerRoute,{
                 username,email,password,
             });
-            // console.log(data.status);
+            console.log(data.status);
             
-            if(data.status === 200){
+            if(data.status){
                 localStorage.setItem('Chatty-user',JSON.stringify(data.user));
                 console.log("Data Sent to DB");
                 navigate("/");

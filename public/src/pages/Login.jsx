@@ -26,17 +26,17 @@ function Login() {
         if(handleValidation()){
           
             const {username,password} = values;
-            const data = await axios.post(loginRoute,{
+            const {data} = await axios.post(loginRoute,{
                 username,password,
             });
-            // console.log(data.status);
+            console.log(data.status);
             
-            if(data.status === 200){
+            if(data.status === true){
                 localStorage.setItem('Chatty-user',JSON.stringify(data.user));
                 console.log("Data Sent to DB");
                 navigate("/");
             }
-            else{
+            if(data.status === false){
                 toast.error(data.msg,toastOptions);
             }
             

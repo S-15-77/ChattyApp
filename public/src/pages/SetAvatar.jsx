@@ -23,6 +23,9 @@ function SetAvatar() {
         theme : "dark",
     }
     const setProfilePic = async () => {
+        if(selectedAvatar === undefined){
+            toast.error("Please Select an Avatar",toastOptions);
+        }
     };
     useEffect( () => 
     { 
@@ -61,6 +64,7 @@ function SetAvatar() {
                 })
             }
         </div>
+        <button className='submit-btn' onClick={setProfilePic}>Set as Profile Picture</button>
     </Container>
     <ToastContainer/>
     </>
@@ -104,6 +108,23 @@ const Container = styled.div`
             border: 0.4rem solid #4e0eff;
             
         }
+        
     }
+    .submit-btn{
+        background-color : #997af0;
+        color : white;
+        padding : 1rem 2rem;
+        border : none;
+        font-weight : bold;
+        cursor : pointer;
+        border-radius : 0.4rem;
+        font-size : 1rem;
+        text-transform : uppercase;
+        transition 0.5s ease-in-out;
+        &:hover{
+            background-color : #4e0eff;
+        }
+    }
+
     `;
 export default SetAvatar;

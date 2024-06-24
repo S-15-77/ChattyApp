@@ -1,4 +1,4 @@
-import React, {useState}from 'react';
+import React, {useState,useEffect}from 'react';
 import { Link,useNavigate} from 'react-router-dom';
 import styled from 'styled-components';
 import Logo from "../assets/logo_b_w_1.png";
@@ -21,6 +21,11 @@ function Login() {
         draggable : true,
         theme : "dark",
     }
+    useEffect(() => {
+        if(localStorage.getItem("Chatty-user")){
+            navigate("/");
+        }
+    },[])
     const handleSubmit = async (event) => {
         event.preventDefault();
         if(handleValidation()){

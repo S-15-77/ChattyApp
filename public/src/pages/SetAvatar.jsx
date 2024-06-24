@@ -10,7 +10,7 @@ import {setAvatarRoute} from "../utils/APIRoutes";
 import { Buffer } from 'buffer';
 
 function SetAvatar() {
-    const api = 'https://api.multiavatar.com/12345678';
+    const api = `https://api.multiavatar.com/123456789`;
     const navigate = useNavigate();
     const [avatars,setAvatars] =  useState([]);
     const [loading,setLoading] = useState(true);
@@ -21,10 +21,32 @@ function SetAvatar() {
         pauseOnHover : true,
         draggable : true,
         theme : "dark",
-    }
+    };
+    useEffect( () => {
+        if(!localStorage.getItem("Chatty-user")){
+            navigate("/login");
+        }
+    },[])
     const setProfilePic = async () => {
         if(selectedAvatar === undefined){
             toast.error("Please Select an Avatar",toastOptions);
+        }
+        else{
+            const user = await JSON.parse(localStorage.getItem("Chatty-user"));
+            const {data} = await axios.post(`${setAvatarRoute}/${user._id}`,{
+                image : avatars[selectedAvatar], 
+            });
+            console.log(data);
+            if(data.isSet){
+                user.isAvatarImageSet = true;
+                user.avatarImage = data.image;
+                localStorage.setItem("Chatty-user",JSON.stringify(user));
+                navigate("/");
+            }
+            else{
+                toast.error("Error in Setting Profile Picture",toastOptions);
+            
+            }
         }
     };
     useEffect( () => 
@@ -47,26 +69,32 @@ function SetAvatar() {
     
   return (
     <>
-    <Container>
-        <div className="titler-container">
-            <h1>
-                Pick an Avatar
-            </h1>
-        </div>
-        <div className="avatars">
-            {
-                avatars.map((avatar,index)=>{
-                    return(
-                        <div className={`avatar ${selectedAvatar === index?"selected":""}`}>
-                            <img src={`data:image/svg+xml;base64,${avatar}`} alt ="" onClick={() => setSelectedAvatar(index)}></img>
-                        </div>
-                    )
-                })
-            }
-        </div>
-        <button className='submit-btn' onClick={setProfilePic}>Set as Profile Picture</button>
-    </Container>
-    <ToastContainer/>
+
+        {
+            loading ? <Container>
+                <img src={loader} alt="loader" className='loader'/>
+            </Container> : (
+        <Container>
+            <div className="titler-container">
+                <h1>
+                    Pick an Avatar
+                </h1>
+            </div>
+            <div className="avatars">
+                {
+                    avatars.map((avatar,index)=>{
+                        return(
+                            <div className={`avatar ${selectedAvatar === index?"selected":""}`}>
+                                <img src={`data:image/svg+xml;base64,${avatar}`} alt ="" onClick={() => setSelectedAvatar(index)}></img>
+                            </div>
+                        )
+                    })
+                }
+            </div>
+            <button className='submit-btn' onClick={setProfilePic}>Set as Profile Picture</button>
+            <ToastContainer/>
+        </Container>
+        )}
     </>
   )
 }

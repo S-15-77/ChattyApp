@@ -1,21 +1,37 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useRef} from 'react'
 import styled from 'styled-components'
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import { allUsersRoute } from '../utils/APIRoutes';
+import { allUsersRoute,host } from '../utils/APIRoutes';
 import Contacts from '../components/Contact';
+import Welcome from '../components/Welcome';
+import ChatContainer from '../components/ChatContainer';
+import {io} from 'socket.io-client';
 function Chat() {
+  const socket = useRef();
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
-  const[currentUser,setCurrentUser] = useState(undefined);
+  const [currentUser,setCurrentUser] = useState(undefined);
   const [currentChat,setCurrentChat] = useState(undefined);
+  const [isLoaded,setIsLoaded] = useState(false);
   useEffect(()=>{
-    if(!localStorage.getItem("Chatty-user")){
+    function fetchData(){
+      const user = localStorage.getItem("Chatty-user")
+      if(!user){
       navigate("/login");
     }else{
-      setCurrentUser(JSON.parse(localStorage.getItem("Chatty-user")));
+      setCurrentUser(JSON.parse(user));
+      setIsLoaded(true);
+    }}
+    fetchData();
+  },[navigate])
+  useEffect( ()=>{
+    if(currentUser){
+      socket.current = io(host);
+      socket.current.emit("add-user",currentUser._id);
     }
-  },[])
+
+  },[currentUser])
   useEffect( ()=>{
     
     async function fetchData(){
@@ -23,8 +39,7 @@ function Chat() {
     if(currentUser){
       if(currentUser.isAvatarImageSet){
         const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        console.log(data);
-        console.log(data.data);
+        
         setContacts(data.data);
       }else{
         navigate("/setAvatar");
@@ -40,6 +55,7 @@ function Chat() {
     <Container>
       <div className="container">
         <Contacts contacts={contacts} currentUser={currentUser} changeChat={handleChatChange}/>
+        {isLoaded && currentChat === undefined?(<Welcome currentUser={currentUser}/>):(< ChatContainer currentChat={currentChat} currentUser={currentUser} socket={socket}/>)}
       </div>
     </Container>
   )
